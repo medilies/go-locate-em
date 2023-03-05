@@ -1,0 +1,9 @@
+package controllers
+
+import "net/http"
+
+type HomeController struct{}
+
+func (hh HomeController) Index(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Welcome"))
+}
