@@ -8,10 +8,12 @@ import (
 )
 
 func main() {
+	mux := http.NewServeMux()
+
 	hc := &controllers.HomeController{}
 
-	http.HandleFunc("/", hc.Index)
+	mux.HandleFunc("/", hc.Index)
 
-	fmt.Println("Linstenning on http://127.0.0.1:8000")
-	http.ListenAndServe(":8000", nil)
+	fmt.Println("Linstenning on port 8000, see: http://127.0.0.1:8000")
+	http.ListenAndServe(":8000", mux)
 }
