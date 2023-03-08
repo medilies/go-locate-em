@@ -8,10 +8,10 @@ import (
 
 type Router struct{}
 
-var hc = &controllers.HomeController{}
+var sc = &controllers.SearchController{}
 
 func (Router) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/search", hc.Index)
+	mux.HandleFunc("/api/search", sc.Search)
 
 	fs := http.FileServer(http.Dir("static"))
 	mux.Handle("/public/", http.StripPrefix("/public/", fs))

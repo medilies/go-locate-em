@@ -40,7 +40,7 @@
         }).addTo(map);
 
         // Initialize marker layer group
-        let markers = L.layerGroup().addTo(map);
+        let markers = L.featureGroup().addTo(map);
 
         // Function to add markers to the map
         function addMarkers(data) {
@@ -64,7 +64,7 @@
             let query = document.getElementById('search-box').value;
 
             // Fetch data from API endpoint with search query
-            fetch(`https://api.openbrewerydb.org/breweries/search?query=${query}`)
+            fetch(`http://127.0.0.1:8000/api/search?query=${query}`)
                 .then(response => response.json())
                 .then(data => {
                     // Add markers to the map with search results
