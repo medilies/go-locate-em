@@ -2,42 +2,73 @@
 <html>
 
 <head>
-    <title>Leaflet Map Example</title>
-    <!-- Load Leaflet from CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+    <meta charset="utf-8" />
+    <title>Leaflet Map with Search Box and API Markers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+        }
+    </style>
 </head>
 
 <body>
-
-    <!-- Create a div for the map -->
-    <div id="mapid" style="height: 400px;"></div>
-
+    <div>
+        <input type="text" id="search-box" placeholder="Enter search query">
+        <button id="search-btn">Search</button>
+    </div>
+    <div id="map"></div>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        // Initialize the map
-        var map = L.map('mapid').setView([51.505, -0.09], 13);
+        // Initialize map
+        var map = L.map('map').setView([36.4312, 2.8331], 4);
 
-        // Add a tile layer to the map
+        // Add tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-            maxZoom: 18
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
         }).addTo(map);
 
-        // Fetch data from API endpoint and add markers to the map
-        fetch('https://jsonplaceholder.typicode.com/users')
-            .then(response => response.json())
-            .then(data => {
-                // Loop through the user data and add markers to the map
-                data.forEach(user => {
-                    var latlng = [user.address.geo.lat, user.address.geo.lng];
-                    var popup = L.popup().setContent(user.name);
-                    L.marker(latlng).addTo(map).bindPopup(popup);
-                });
-            })
-            .catch(error => console.error(error));
+        // Initialize marker layer group
+        var markers = L.layerGroup().addTo(map);
 
+        // Function to add markers to the map
+        function addMarkers(data) {
+            // Clear existing markers
+            markers.clearLayers();
+
+            // Loop through the data and add markers to the layer group
+            data.forEach(item => {
+                var latlng = [item.latitude, item.longitude];
+                var popup = L.popup().setContent(item.name);
+                L.marker(latlng).addTo(markers).bindPopup(popup);
+            });
+
+            // Fit map to markers
+            map.fitBounds(markers.getBounds());
+        }
+
+        // Function to handle search button click
+        function handleSearch() {
+            // Get search query from input
+            var query = document.getElementById('search-box').value;
+
+            // Fetch data from API endpoint with search query
+            fetch(`https://api.openbrewerydb.org/breweries/search?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Add markers to the map with search results
+                    addMarkers(data);
+                })
+                .catch(error => console.error(error));
+        }
+
+        // Add search button click event listener
+        document.getElementById('search-btn').addEventListener('click', handleSearch);
     </script>
-
 </body>
 
 </html>
