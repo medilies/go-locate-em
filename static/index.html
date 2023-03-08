@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Leaflet Map Example</title>
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+</head>
+
+<body>
+
+    <!-- Create a div for the map -->
+    <div id="mapid" style="height: 400px;"></div>
+
+    <script>
+        // Initialize the map
+        var map = L.map('mapid').setView([51.505, -0.09], 13);
+
+        // Add a tile layer to the map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+            maxZoom: 18
+        }).addTo(map);
+
+        // Fetch data from API endpoint and add markers to the map
+        fetch('https://jsonplaceholder.typicode.com/users')
+            .then(response => response.json())
+            .then(data => {
+                // Loop through the user data and add markers to the map
+                data.forEach(user => {
+                    var latlng = [user.address.geo.lat, user.address.geo.lng];
+                    var popup = L.popup().setContent(user.name);
+                    L.marker(latlng).addTo(map).bindPopup(popup);
+                });
+            })
+            .catch(error => console.error(error));
+
+    </script>
+
+</body>
+
+</html>
