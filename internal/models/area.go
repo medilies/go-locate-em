@@ -1,6 +1,20 @@
 package models
 
-import "github.com/medilies/go-locate-em/internal/models/database"
+import (
+	"database/sql"
+	"fmt"
+	"strings"
+)
+
+type AreaModel struct {
+	db          *sql.DB
+	table       string
+	columnsList []string
+}
+
+func NewAreaModel(db *sql.DB) *AreaModel {
+	return &AreaModel{db, "tunisia_states", []string{"id", "name", "AsText(perimeter)"}}
+}
 
 type Area struct {
 	Id        int    `json:"id"`
@@ -8,25 +22,22 @@ type Area struct {
 	Perimeter string `json:"perimeter"`
 }
 
-func All() ([]Area, error) {
-	db := database.GetDB()
-
-	rows, err := db.Query("SELECT id, name, AsText(perimeter) FROM tunisia_states")
+func (m *AreaModel) All() ([]Area, error) {
+	rows, err := m.db.Query(fmt.Sprintf("SELECT %s FROM %s", strings.Join(m.columnsList, ", "), m.table))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var states []Area
+	var areas []Area
 	for rows.Next() {
-		var state Area
-		err = rows.Scan(&state.Id, &state.Name, &state.Perimeter)
+		var area Area
+		err := rows.Scan(&area.Id, &area.Name, &area.Perimeter)
 		if err != nil {
 			return nil, err
 		}
-		states = append(states, state)
+		areas = append(areas, area)
 	}
 
-	return states, nil
-
+	return areas, nil
 }
