@@ -5,13 +5,15 @@ import (
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/medilies/go-locate-em/internal/models/database"
+	"github.com/medilies/go-locate-em/internal/models"
 )
 
 type AreaController struct{}
 
+// var areaModel = &models.Area{}
+
 func (AreaController) Index(w http.ResponseWriter, r *http.Request) {
-	states, err := getAreas()
+	states, err := models.All()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -19,32 +21,4 @@ func (AreaController) Index(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(states)
-}
-
-type Area struct {
-	Id        int    `json:"id"`
-	Name      string `json:"name"`
-	Perimeter string `json:"perimeter"`
-}
-
-func getAreas() ([]Area, error) {
-	db := database.GetDB()
-
-	rows, err := db.Query("SELECT id, name, AsText(perimeter) FROM tunisia_states")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var states []Area
-	for rows.Next() {
-		var state Area
-		err = rows.Scan(&state.Id, &state.Name, &state.Perimeter)
-		if err != nil {
-			return nil, err
-		}
-		states = append(states, state)
-	}
-
-	return states, nil
 }
