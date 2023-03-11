@@ -42,6 +42,23 @@
         // Initialize marker layer group
         let markers = L.featureGroup().addTo(map);
 
+        fetch(`http://127.0.0.1:8000/api/areas`)
+            .then(response => response.json())
+            .then(data => {
+
+                data.forEach(area => {
+                    console.log(area.perimeter.coordinates);
+                    var polygon = L.polygon(area.perimeter.coordinates, { color: 'red' }).addTo(map);
+
+                    // zoom the map to the polygon
+                    map.fitBounds(polygon.getBounds());
+                });
+            })
+            .catch(error => console.error(error));
+
+    </script>
+
+    <script>
         // Function to add markers to the map
         function addMarkers(data) {
             // Clear existing markers
@@ -57,7 +74,9 @@
             // Fit map to markers
             map.fitBounds(markers.getBounds());
         }
+    </script>
 
+    <script>
         // Function to handle search button click
         function handleSearch() {
             // Get search query from input

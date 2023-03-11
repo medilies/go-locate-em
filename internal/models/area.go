@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -13,13 +14,26 @@ type AreaModel struct {
 }
 
 func NewAreaModel(db *sql.DB) *AreaModel {
-	return &AreaModel{db, "tunisia_states", []string{"id", "name", "AsText(perimeter)"}}
+	return &AreaModel{db, "areas", []string{"id", "name", "ST_AsGeoJSON(perimeter)"}}
 }
 
 type Area struct {
-	Id        int    `json:"id"`
-	Name      string `json:"name"`
-	Perimeter string `json:"perimeter"`
+	Id        int        `json:"id"`
+	Name      string     `json:"name"`
+	Perimeter *Perimeter `json:"perimeter"`
+}
+
+type Perimeter struct {
+	Type        string        `json:"type"`
+	Coordinates [][][]float64 `json:"coordinates"`
+}
+
+func (p *Perimeter) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("failed to parse Perimeter field")
+	}
+	return json.Unmarshal(bytes, p)
 }
 
 func (m *AreaModel) All() ([]Area, error) {

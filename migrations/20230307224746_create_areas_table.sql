@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE IF NOT EXISTS tunisia_states (
+CREATE TABLE IF NOT EXISTS areas (
   id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   perimeter POLYGON NOT NULL,
@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS tunisia_states (
 );
 -- +goose StatementEnd
 
+
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE tunisia_states
+DROP TABLE areas
 -- +goose StatementEnd
