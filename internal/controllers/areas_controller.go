@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/medilies/go-locate-em/internal/models/database"
 )
 
 type AreaController struct{}
@@ -28,11 +28,7 @@ type Area struct {
 }
 
 func getAreas() ([]Area, error) {
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/go_locate_em")
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
+	db := database.GetDB()
 
 	rows, err := db.Query("SELECT id, name, AsText(perimeter) FROM tunisia_states")
 	if err != nil {

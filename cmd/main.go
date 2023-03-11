@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/medilies/go-locate-em/internal/models/database"
 	"github.com/medilies/go-locate-em/internal/router"
 )
 
 func main() {
+	database.GetDB()
+
 	mux := http.NewServeMux()
 	router.Router{}.RegisterRoutes(mux)
 
