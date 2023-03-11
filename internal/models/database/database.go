@@ -2,9 +2,11 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"sync"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/medilies/go-locate-em/internal/config"
 )
 
 var (
@@ -13,8 +15,17 @@ var (
 )
 
 func initDB() {
+	databaseConfig := config.GetDatabaseConfig()
+
+	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+		databaseConfig.DbUser,
+		databaseConfig.DbPassword,
+		databaseConfig.DbHost,
+		databaseConfig.DbPort,
+		databaseConfig.DbName)
+
 	var err error
-	db, err = sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/go_locate_em")
+	db, err = sql.Open("mysql", connStr)
 	if err != nil {
 		panic(err)
 	}
