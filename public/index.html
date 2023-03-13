@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
         integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+
     <style>
         #map {
             height: 500px;
@@ -27,6 +29,8 @@
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
         integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
 
+    <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+
     <script>
         // Initialize map
         let map = L.map('map').setView([36.4312, 2.8331], 4);
@@ -42,12 +46,66 @@
         // Initialize marker layer group
         let markers = L.featureGroup().addTo(map);
 
+        // Initialize draw control and add to map
+        let drawControl = new L.Control.Draw({
+            draw: {
+                polygon: true,
+                polyline: false,
+                circle: false,
+                rectangle: false,
+                marker: false
+            },
+            edit: {
+                featureGroup: markers
+            }
+        });
+        map.addControl(drawControl);
+
+        // Handle created event when polygon is drawn
+        map.on(L.Draw.Event.CREATED, function (event) {
+            let polygon = event.layer;
+            markers.addLayer(polygon);
+            savePolygon(polygon);
+        });
+
+        // Function to save polygon to API
+        function savePolygon(polygon) {
+            let perimeter = polygon.getLatLngs()[0].map(latlng => [latlng.lng, latlng.lat]);
+            perimeter.push(perimeter[0]);
+            let data = {
+                perimeter: {
+                    type: 'Polygon',
+                    coordinates: [perimeter]
+                }
+            };
+
+            // send a POST request to the API with the GeoJSON data
+            fetch('http://127.0.0.1:8000/api/areas/store', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // handle the response
+                })
+                .catch(error => console.error(error));
+        }
+
+        // =====================================
+
         fetch(`http://127.0.0.1:8000/api/areas`)
             .then(response => response.json())
             .then(data => {
 
                 data.forEach(area => {
-                    console.log(area.perimeter.coordinates);
+                    // ! reverse long,lat => limited to first polygon
+                    area.perimeter.coordinates[0].forEach((point, i) => {
+                        area.perimeter.coordinates[0][i] = [point[1], point[0]];
+                    });
+
                     var polygon = L.polygon(area.perimeter.coordinates, { color: 'red' }).addTo(map);
 
                     // zoom the map to the polygon

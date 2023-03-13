@@ -13,7 +13,9 @@ var ac = &controllers.AreaController{}
 
 func (Router) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/search", sc.Search)
+
 	mux.HandleFunc("/api/areas", ac.Index)
+	mux.HandleFunc("/api/areas/store", ac.Store)
 
 	fs := http.FileServer(http.Dir("public"))
 	mux.Handle("/public/", http.StripPrefix("/public/", fs))
