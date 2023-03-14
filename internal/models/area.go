@@ -18,22 +18,9 @@ func NewAreaModel(db *sql.DB) *AreaModel {
 }
 
 type Area struct {
-	Id        int        `json:"id"`
-	Name      string     `json:"name"`
-	Perimeter *Perimeter `json:"perimeter"`
-}
-
-type Perimeter struct {
-	Type        string        `json:"type"`
-	Coordinates [][][]float64 `json:"coordinates"`
-}
-
-func (p *Perimeter) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return fmt.Errorf("failed to parse Perimeter field")
-	}
-	return json.Unmarshal(bytes, p)
+	Id        int             `json:"id"`
+	Name      string          `json:"name"`
+	Perimeter json.RawMessage `json:"perimeter"`
 }
 
 func (m *AreaModel) All() ([]Area, error) {

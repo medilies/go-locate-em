@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -25,39 +26,34 @@ func (AreaController) Index(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(states)
 }
 
-type Perimeter struct {
-	Type        string        `json:"type"`
-	Coordinates [][][]float64 `json:"coordinates"`
-}
-
 type RequestBody struct {
-	Perimeter Perimeter `json:"perimeter"`
+	Perimeter json.RawMessage `json:"perimeter"`
 }
 
 func (AreaController) Store(w http.ResponseWriter, r *http.Request) {
-	var requestBody RequestBody
-	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	// Read the request body
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error reading request body", http.StatusInternalServerError)
 		return
 	}
 
-	// convert the polygon coordinates to WKT string
-	wkt := "POLYGON(("
-	for _, point := range requestBody.Perimeter.Coordinates[0] {
-		wkt += fmt.Sprintf("%f %f,", point[0], point[1])
+	// Parse the JSON string into a Request struct
+	var req RequestBody
+	err = json.Unmarshal(body, &req)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
-	// remove the last comma and close the polygon
-	wkt = wkt[:len(wkt)-1] + "))"
 
 	// Prepare the insert statement with placeholders
-	stmt, err := database.GetDB().Prepare("INSERT INTO areas (name, perimeter) VALUES (?, ST_PolygonFromText(?))")
+	stmt, err := database.GetDB().Prepare("INSERT INTO areas (name, perimeter) VALUES (?, ST_GeomFromGeoJSON(?))")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	_, err = stmt.Exec("polygon.Name", wkt)
+	_, err = stmt.Exec("polygon.Name", req.Perimeter)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

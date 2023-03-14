@@ -10,18 +10,20 @@ The longitude (x-coordinate) is usually specified before the latitude (y-coordin
 
 There are several types of geographical objects that can be represented geospatial data formats. Here are some common examples:
 
--   Point: A single point in space, represented by a pair of coordinates.
--   LineString: A sequence of points that form a continuous line.
--   Polygon: A closed shape defined by a sequence of points that form a boundary.
--   MultiPoint: A collection of points.
--   MultiLineString: A collection of LineStrings.
--   MultiPolygon: A collection of Polygons.
--   GeometryCollection: A collection of points, lines, polygons, or other geometry types.
--   CircularString: A sequence of points that form a curve.
--   CompoundCurve: A sequence of circular and/or straight line segments.
--   CurvePolygon: A polygon with a curved boundary, consisting of a Curve as the outer boundary and zero or more inner linear rings.
+-   `Point`: A single point in space, represented by a pair of coordinates.
+-   `LineString`: A sequence of points that form a continuous line.
+-   `Polygon`: A closed shape defined by a sequence of points that form a boundary.
+-   `MultiPoint`: A collection of points.
+-   `MultiLineString`: A collection of LineStrings.
+-   `MultiPolygon`: A collection of Polygons.
+-   `GeometryCollection`: A collection of points, lines, polygons, or other geometry types.
+-   `CircularString`: A sequence of points that form a curve.
+-   `CompoundCurve`: A sequence of circular and/or straight line segments.
+-   `CurvePolygon`: A polygon with a curved boundary, consisting of a Curve as the outer boundary and zero or more inner linear rings.
 
-A polygon can be composed of multiple closed shapes, as long as each individual shape is itself a valid polygon. However, these shapes would be considered as separate polygons, rather than a single polygon. In WKT notation, each separate polygon would be enclosed in its own set of parentheses
+These types of geographic objects can be represented in different geospatial data formats such as `WKT`, `GeoJSON`, `Shapefile`, `GeoTIFF`, `KML`, and many others, which allow GIS (Geographic Information System) software to manipulate and analyze geographic data.
+
+> A polygon can be composed of multiple closed shapes, as long as each individual shape is itself a valid polygon. However, these shapes would be considered as separate polygons, rather than a single polygon. In WKT notation, each separate polygon would be enclosed in its own set of parentheses
 
 ## WKT
 
@@ -87,4 +89,71 @@ In a GeoJSON, there are a few required elements that must be included:
         ]
     ]
 }
+```
+
+## SQL
+
+See the supported types by MariaDB [here](https://mariadb.com/kb/en/geometry-types/)
+
+The basic geometry type is `GEOMETRY`. But the type can be more specific ([`POINT`](https://mariadb.com/kb/en/point/), `LINESTRING`,[`POLYGON`](https://mariadb.com/kb/en/polygon/), `MULTIPOINT`, `MULTILINESTRING`, [`MULTIPOLYGON`](https://mariadb.com/kb/en/multipolygon/), `GEOMETRYCOLLECTION`, `GEOMETRY`)
+
+> `geom` typically refers to a spatial column that stores geometric data.
+
+### Picked examples
+
+```sql
+CREATE TABLE gis_point (g POINT);
+
+INSERT INTO gis_point VALUES (PointFromText('POINT(10 10)'));
+```
+
+```sql
+CREATE TABLE gis_polygon (g POLYGON);
+
+INSERT INTO gis_polygon VALUES
+    (PolygonFromText('POLYGON((10 10,20 10,20 20,10 20,10 10))')),
+    (PolyFromText('POLYGON((0 0,50 0,50 50,0 50,0 0), (10 10,20 10,20 20,10 20,10 10))'));
+```
+
+```sql
+CREATE TABLE gis_geometry (g GEOMETRY);
+
+INSERT into gis_geometry SELECT * FROM gis_point;
+INSERT into gis_geometry SELECT * FROM gis_line;
+INSERT into gis_geometry SELECT * FROM gis_polygon;
+INSERT into gis_geometry SELECT * FROM gis_multi_point;
+INSERT into gis_geometry SELECT * FROM gis_multi_line;
+INSERT into gis_geometry SELECT * FROM gis_multi_polygon;
+INSERT into gis_geometry SELECT * FROM gis_geometrycollection;
+```
+
+### Functions
+
+#### ST_GeomFromText (WKT -> Geom)
+
+Constructs a geometry value of any type using its WKT representation and SRID.
+
+`GeomFromText()`, `GeometryFromText()`, `ST_GeomFromText()` and `ST_GeometryFromText()` are all synonyms.
+
+```sql
+SELECT ST_GeomFromText('POLYGON((8.06 37.56,2.61 37.56,4.13 36.01,6.85 36.01,8.06 37.56))')
+-- POLYGON((8.06 37.56,2.61 37.56,4.13 36.01,6.85 36.01,8.06 37.56))
+```
+
+#### ST_AsText (Geom -> WKT)
+
+`ST_AsText(),` `AsText()`, `ST_AsWKT()` and `AsWKT()` are all synonyms.
+
+#### ST_GeomFromGeoJSON (GeoJSON -> Geom)
+
+```SQL
+SELECT ST_GeomFromGeoJSON('{"type":"Polygon","coordinates":[[[8.06,37.56],[2.61,37.56],[4.13,36.01],[6.85,36.01],[8.06,37.56]]]}')
+-- POLYGON((8.06 37.56,2.61 37.56,4.13 36.01,6.85 36.01,8.06 37.56))
+```
+
+#### ST_AsGeoJSON (Geom -> GeoJSON)
+
+```SQL
+ST_AsGeoJSON(ST_GeomFromText('POLYGON((8.06 37.56,2.61 37.56,4.13 36.01,6.85 36.01,8.06 37.56))'));
+-- {"type":"Polygon","coordinates":[[[8.06,37.56],[2.61,37.56],[4.13,36.01],[6.85,36.01],[8.06,37.56]]]}
 ```
