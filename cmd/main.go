@@ -17,8 +17,9 @@ func main() {
 	defer db.Close()
 
 	mux := http.NewServeMux()
-	router.Router{}.RegisterRoutes(mux)
+	router.Router{}.Boot(mux)
 
 	fmt.Printf("Linstenning on, see: http://%s \n", appConfig.URL)
+
 	http.ListenAndServe(appConfig.URL, mux)
 }
