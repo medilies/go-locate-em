@@ -1,3 +1,7 @@
+# GIS
+
+## Longitude & Latitude
+
 ![longitude latitude on earth](https://geography.name/wp-content/uploads/2015/10/Lat_Long.webp)
 
 ![longitude latitude on flat map](https://i.pinimg.com/originals/59/0f/8d/590f8df285a96811609ac189bf1c6e4b.gif)
@@ -8,7 +12,7 @@ The longitude (x-coordinate) is usually specified before the latitude (y-coordin
 
 ## Geographical objects
 
-There are several types of geographical objects that can be represented geospatial data formats. Here are some common examples:
+There are several types of geographical objects. Here are some common examples:
 
 -   `Point`: A single point in space, represented by a pair of coordinates.
 -   `LineString`: A sequence of points that form a continuous line.
@@ -27,7 +31,7 @@ These types of geographic objects can be represented in different geospatial dat
 
 ## WKT
 
-Well Know Text (WKT): is a text-based format used to represent geometric objects in a standardized way, used in geographic information systems (GIS) and spatial databases to store and share spatial data.
+Well Know Text (WKT): is a text-based format used to represent geometric objects in a standardized way, used in GIS and spatial databases to store spatial data.
 
 ### Examples
 
@@ -45,7 +49,7 @@ GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6,7 10))
 
 In a GeoJSON, there are a few required elements that must be included:
 
--   `type`: specifies the type of GeoJSON object, such as `Point`, `LineString`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, or `GeometryCollection`.
+-   `type`: specifies the type of GeoJSON object.
 -   `coordinates`: the coordinates of the geometry, which can be specified in various ways depending on the geometry type. For example, a Point is represented as an array of two or three numbers representing the longitude, latitude, and (optionally) elevation.
 -   `properties`: an optional JSON object that can contain any additional data or attributes associated with the feature.
 
@@ -154,6 +158,6 @@ SELECT ST_GeomFromGeoJSON('{"type":"Polygon","coordinates":[[[8.06,37.56],[2.61,
 #### ST_AsGeoJSON (Geom -> GeoJSON)
 
 ```SQL
-ST_AsGeoJSON(ST_GeomFromText('POLYGON((8.06 37.56,2.61 37.56,4.13 36.01,6.85 36.01,8.06 37.56))'));
+SELECT ST_AsGeoJSON(ST_GeomFromText('POLYGON((8.06 37.56,2.61 37.56,4.13 36.01,6.85 36.01,8.06 37.56))'));
 -- {"type":"Polygon","coordinates":[[[8.06,37.56],[2.61,37.56],[4.13,36.01],[6.85,36.01],[8.06,37.56]]]}
 ```
