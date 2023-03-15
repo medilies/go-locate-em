@@ -15,7 +15,7 @@ var (
 )
 
 func initDB() {
-	databaseConfig := config.GetDatabaseConfig()
+	databaseConfig := config.GetDbConfig()
 
 	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 		databaseConfig.DbUser,

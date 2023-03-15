@@ -4,18 +4,21 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/medilies/go-locate-em/internal/config"
 	"github.com/medilies/go-locate-em/internal/models/database"
 	"github.com/medilies/go-locate-em/internal/router"
 )
 
 func main() {
-	db := database.GetDB()
+	config.GetDbConfig()
+	appConfig := config.GetAppConfig()
 
+	db := database.GetDB()
 	defer db.Close()
 
 	mux := http.NewServeMux()
 	router.Router{}.RegisterRoutes(mux)
 
-	fmt.Println("Linstenning on port 8000, see: http://127.0.0.1:8000")
-	http.ListenAndServe("127.0.0.1:8000", mux)
+	fmt.Printf("Linstenning on, see: http://%s \n", appConfig.URL)
+	http.ListenAndServe(appConfig.URL, mux)
 }

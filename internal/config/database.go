@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type DatabaseConfig struct {
+type databaseConfig struct {
 	DbHost     string
 	DbPort     string
 	DbUser     string
@@ -15,10 +15,10 @@ type DatabaseConfig struct {
 	DbName     string
 }
 
-var DbConfig *DatabaseConfig
+var dbConfig *databaseConfig
 
-func InitDatabaseConfig() {
-	if DbConfig != nil {
+func InitDbConfig() {
+	if dbConfig != nil {
 		return
 	}
 
@@ -27,7 +27,7 @@ func InitDatabaseConfig() {
 		log.Fatalf("Error loading .env file: %s", err)
 	}
 
-	DbConfig = &DatabaseConfig{
+	dbConfig = &databaseConfig{
 		DbHost:     os.Getenv("DB_HOST"),
 		DbPort:     os.Getenv("DB_PORT"),
 		DbUser:     os.Getenv("DB_USER"),
@@ -36,9 +36,9 @@ func InitDatabaseConfig() {
 	}
 }
 
-func GetDatabaseConfig() *DatabaseConfig {
-	if DbConfig == nil {
-		InitDatabaseConfig()
+func GetDbConfig() *databaseConfig {
+	if dbConfig == nil {
+		InitDbConfig()
 	}
-	return DbConfig
+	return dbConfig
 }
