@@ -9,7 +9,9 @@ import (
 )
 
 func main() {
-	database.GetDB()
+	db := database.GetDB()
+
+	defer db.Close()
 
 	mux := http.NewServeMux()
 	router.Router{}.RegisterRoutes(mux)
