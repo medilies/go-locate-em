@@ -1,4 +1,44 @@
-class MapApp {
+class MapComponent {
+    constructor(id) {
+        this.id = id;
+        this.map = new Map(this.id);
+
+        this.onMount();
+    }
+
+    onMount() {
+        // TODO: refactor to refresh map areas
+        fetch(`http://127.0.0.1:8000/api/areas`)
+            .then((response) => response.json())
+            .then((data) => {
+                data.forEach((area) => {
+                    // ! reverse long,lat => limited to first polygon
+                    // TODO: use geo objects with reverse long,lat interface
+                    area.perimeter.coordinates[0].forEach((point, i) => {
+                        area.perimeter.coordinates[0][i] = [point[1], point[0]];
+                    });
+
+                    this.map.addPolygon(area.perimeter.coordinates);
+                });
+            })
+            .catch((error) => console.error(error));
+    }
+
+    displaySearchResult(data) {
+        this.map.drawMarkers(data);
+    }
+}
+
+class Map {
+    addPolygon(geoJson) {
+        let polygon = L.polygon(geoJson, {
+            color: "red",
+        }).addTo(this.map);
+
+        // zoom the map to the polygon
+        this.map.fitBounds(polygon.getBounds());
+    }
+
     constructor() {
         // Initialize map
         this.map = L.map("map").setView([36.4312, 2.8331], 4);
@@ -32,10 +72,6 @@ class MapApp {
 
         // Bind event listeners
         this.map.on(L.Draw.Event.CREATED, this.handlePolygonCreated.bind(this));
-
-        document
-            .getElementById("search-btn")
-            .addEventListener("click", this.handleSearch.bind(this));
     }
 
     // Handle created event when polygon is drawn
@@ -51,6 +87,7 @@ class MapApp {
             .getLatLngs()[0]
             .map((latlng) => [latlng.lng, latlng.lat]);
         perimeter.push(perimeter[0]);
+
         let data = {
             perimeter: {
                 type: "Polygon",
@@ -73,55 +110,33 @@ class MapApp {
             .catch((error) => console.error(error));
     }
 
-    // Function to add markers to the map
-    addMarkers(data) {
-        // Clear existing markers
+    /**
+     *
+     * @param {*} data list points
+     */
+    drawMarkers(data) {
         this.markers.clearLayers();
 
-        // Loop through the data and add markers to the layer group
         data.forEach((item) => {
             let latlng = [item.latitude, item.longitude];
             let popup = L.popup().setContent(item.name);
+
             L.marker(latlng).addTo(this.markers).bindPopup(popup);
         });
 
-        // Fit map to markers
         this.map.fitBounds(this.markers.getBounds());
-    }
-
-    // Function to handle search button click
-    handleSearch() {
-        // Get search query from input
-        let query = document.getElementById("search-box").value;
-
-        // Fetch data from API endpoint with search query
-        fetch(`http://127.0.0.1:8000/api/search?query=${query}`)
-            .then((response) => response.json())
-            .then((data) => {
-                // Add markers to the map with search results
-                this.addMarkers(data);
-            })
-            .catch((error) => console.error(error));
     }
 }
 
-const map = new MapApp();
+const map = new MapComponent("map");
 
-fetch(`http://127.0.0.1:8000/api/areas`)
-    .then((response) => response.json())
-    .then((data) => {
-        data.forEach((area) => {
-            // ! reverse long,lat => limited to first polygon
-            area.perimeter.coordinates[0].forEach((point, i) => {
-                area.perimeter.coordinates[0][i] = [point[1], point[0]];
-            });
+document.getElementById("search-btn").addEventListener("click", () => {
+    let query = document.getElementById("search-box").value;
 
-            var polygon = L.polygon(area.perimeter.coordinates, {
-                color: "red",
-            }).addTo(map.map);
-
-            // zoom the map to the polygon
-            map.map.fitBounds(polygon.getBounds());
-        });
-    })
-    .catch((error) => console.error(error));
+    fetch(`http://127.0.0.1:8000/api/search?query=${query}`)
+        .then((response) => response.json())
+        .then((data) => {
+            map.displaySearchResult(data);
+        })
+        .catch((error) => console.error(error));
+});
