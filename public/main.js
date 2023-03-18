@@ -12,13 +12,12 @@ class MapComponent {
             .then((response) => response.json())
             .then((data) => {
                 data.forEach((area) => {
-                    // ! reverse long,lat => limited to first polygon
-                    // TODO: use geo objects with reverse long,lat interface
-                    area.perimeter.coordinates[0].forEach((point, i) => {
-                        area.perimeter.coordinates[0][i] = [point[1], point[0]];
-                    });
-
-                    this.map.addPolygon(area.perimeter.coordinates);
+                    if (
+                        area.perimeter.type === "Polygon" ||
+                        area.perimeter.type === "MultiPolygon"
+                    ) {
+                        this.map.addGeometry(area.perimeter);
+                    }
                 });
             })
             .catch((error) => console.error(error));
@@ -30,13 +29,15 @@ class MapComponent {
 }
 
 class Map {
-    addPolygon(geoJson) {
-        let polygon = L.polygon(geoJson, {
+    addGeometry(geoJSON) {
+        const conf = {
             color: "red",
-        }).addTo(this.map);
+        };
 
-        // zoom the map to the polygon
-        this.map.fitBounds(polygon.getBounds());
+        const mapGeometry = L.geoJSON(geoJSON, conf).addTo(this.map);
+
+        // zoom the map to the geometry
+        this.map.fitBounds(mapGeometry.getBounds());
     }
 
     constructor() {
