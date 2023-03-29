@@ -37,27 +37,27 @@ export class Map {
         this.map.addControl(drawControl(this.markers));
 
         // Bind event listeners
-        this.map.on(L.Draw.Event.CREATED, this.handlePolygonCreated.bind(this));
+        this.map.on(
+            L.Draw.Event.CREATED,
+            this.handleGeometryCreated.bind(this)
+        );
     }
 
     // Handle created event when polygon is drawn
-    handlePolygonCreated(event) {
-        let polygon = event.layer;
-        this.markers.addLayer(polygon);
-        this.savePolygon(polygon);
+    handleGeometryCreated(event) {
+        let geometry = event.layer;
+
+        this.markers.addLayer(geometry);
+        this.saveGeometry(geometry.toGeoJSON());
     }
 
-    // Function to save polygon to API
-    savePolygon(polygon) {
-        let perimeter = polygon
-            .getLatLngs()[0]
-            .map((latlng) => [latlng.lng, latlng.lat]);
-        perimeter.push(perimeter[0]);
-
+    // Function to save geometry to API
+    saveGeometry(geometry) {
         let data = {
             perimeter: {
-                type: "Polygon",
-                coordinates: [perimeter],
+                // TODO: directly use geoJson
+                type: geometry.geometry.type,
+                coordinates: geometry.geometry.coordinates,
             },
         };
 
