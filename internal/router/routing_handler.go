@@ -8,14 +8,17 @@ import (
 )
 
 func routingHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	enableCors(&w)
 
 	path := r.URL.Path
 	method := r.Method
 
 	log.Println("  ", method, ": ", path) // TODO: log response on same line
+
+	if method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
 	matchedRoute := matchRoute(path, method)
 
@@ -52,4 +55,10 @@ func matchRoute(path string, method string) *Route {
 	}
 
 	return nil
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "*")
 }
