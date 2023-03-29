@@ -23,6 +23,12 @@ func (AreaController) Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
+	if len(states) == 0 {
+		// TODO: find a better way
+		w.Write([]byte("[]"))
+		return
+	}
 	json.NewEncoder(w).Encode(states)
 }
 
