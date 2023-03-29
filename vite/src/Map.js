@@ -3,6 +3,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw/dist/leaflet.draw.js";
 
+import drawControl from "./drawControl";
+
 export class Map {
     addGeometry(geoJSON) {
         const conf = {
@@ -32,19 +34,7 @@ export class Map {
         this.markers = L.featureGroup().addTo(this.map);
 
         // Initialize draw control and add to map
-        this.drawControl = new L.Control.Draw({
-            draw: {
-                polygon: true,
-                polyline: false,
-                circle: false,
-                rectangle: false,
-                marker: false,
-            },
-            edit: {
-                featureGroup: this.markers,
-            },
-        });
-        this.map.addControl(this.drawControl);
+        this.map.addControl(drawControl(this.markers));
 
         // Bind event listeners
         this.map.on(L.Draw.Event.CREATED, this.handlePolygonCreated.bind(this));
