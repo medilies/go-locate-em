@@ -17,7 +17,7 @@ export class MapComponent {
                     area.perimeter.type === "Polygon" ||
                     area.perimeter.type === "MultiPolygon"
                 ) {
-                    this.map.addGeometry(area.perimeter);
+                    this.map.addArea(area.perimeter);
                 }
             });
         });

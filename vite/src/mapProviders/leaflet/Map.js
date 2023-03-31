@@ -8,46 +8,12 @@ import getDrawControl from "./init/getDrawControl";
 import storeArea from "../../apis/storeArea";
 
 export class Map {
-    addGeometry(geoJSON) {
+    addArea(geoJSON) {
         const conf = {
             color: "red",
         };
 
-        const mapGeometry = L.geoJSON(geoJSON, conf).addTo(this.map);
-
-        // zoom the map to the geometry
-        this.map.fitBounds(mapGeometry.getBounds());
-    }
-
-    constructor() {
-        // Initialize map
-        this.map = L.map("map");
-        this.map.setView([36.4312, 2.8331], 4);
-
-        // Add tile layer
-        tileLayer(this.map);
-
-        // Initialize marker layer group
-        this.markers = L.featureGroup().addTo(this.map);
-
-        const drawControl = getDrawControl(this.markers);
-
-        // Initialize draw control and add to map
-        this.map.addControl(drawControl);
-
-        // Bind event listeners
-        this.map.on(
-            L.Draw.Event.CREATED,
-            this.handleGeometryCreated.bind(this)
-        );
-    }
-
-    // Handle created event when polygon is drawn
-    handleGeometryCreated(event) {
-        let geometry = event.layer;
-
-        this.markers.addLayer(geometry);
-        storeArea(geometry.toGeoJSON());
+        return L.geoJSON(geoJSON, conf).addTo(this.map);
     }
 
     /**
@@ -65,5 +31,41 @@ export class Map {
         });
 
         this.map.fitBounds(this.markers.getBounds());
+    }
+
+    constructor() {
+        // Initialize map
+        this.map = L.map("map");
+        this.map.setView([29, 2.4], 5);
+
+        // Add tile layer
+        tileLayer(this.map);
+
+        // Initialize marker layer group
+        this.markers = L.featureGroup().addTo(this.map);
+
+        const drawControl = getDrawControl(this.markers);
+
+        // Initialize draw control and add to map
+        this.map.addControl(drawControl);
+
+        // Bind event listeners
+        this.map.on(
+            L.Draw.Event.CREATED,
+            this._handleGeometryCreated.bind(this)
+        );
+    }
+
+    // Handle created event when polygon is drawn
+    _handleGeometryCreated(event) {
+        let geoJson = event.layer.toGeoJSON();
+
+        storeArea(geoJson);
+
+        // TODO: use addArea on successful response
+        const area = this.addArea(geoJson);
+
+        // zoom the map to the geometry
+        this.map.fitBounds(area.getBounds());
     }
 }
