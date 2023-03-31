@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -48,7 +47,7 @@ func (AreaController) Store(w http.ResponseWriter, r *http.Request) {
 	var req RequestBody
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		fmt.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -59,12 +58,24 @@ func (AreaController) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = stmt.Exec("polygon.Name", req.Perimeter)
+	// TODO: use a real name
+	result, err := stmt.Exec("area_name", req.Perimeter)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: use ID in reponse
+	_, err = result.LastInsertId()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("yo")
+	err = json.NewEncoder(w).Encode(req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

@@ -60,12 +60,12 @@ export class Map {
     _handleGeometryCreated(event) {
         let geoJson = event.layer.toGeoJSON();
 
-        storeArea(geoJson);
+        storeArea(geoJson).then((storedArea) => {
+            const area = this.addArea(storedArea.perimeter);
+            // console.log(storedArea);
 
-        // TODO: use addArea on successful response
-        const area = this.addArea(geoJson);
-
-        // zoom the map to the geometry
-        this.map.fitBounds(area.getBounds());
+            // zoom the map to the geometry
+            this.map.fitBounds(area.getBounds());
+        });
     }
 }
