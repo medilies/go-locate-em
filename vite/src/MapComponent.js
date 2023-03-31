@@ -1,3 +1,4 @@
+import getAreas from "./apis/getAreas";
 import { Map as LeafletMap } from "./mapProviders/leaflet/Map";
 
 export class MapComponent {
@@ -10,19 +11,16 @@ export class MapComponent {
 
     onMount() {
         // TODO: refactor to refresh map areas
-        fetch(`http://127.0.0.1:8000/api/areas`)
-            .then((response) => response.json())
-            .then((data) => {
-                data.forEach((area) => {
-                    if (
-                        area.perimeter.type === "Polygon" ||
-                        area.perimeter.type === "MultiPolygon"
-                    ) {
-                        this.map.addGeometry(area.perimeter);
-                    }
-                });
-            })
-            .catch((error) => console.error(error));
+        getAreas().then((data) => {
+            data.forEach((area) => {
+                if (
+                    area.perimeter.type === "Polygon" ||
+                    area.perimeter.type === "MultiPolygon"
+                ) {
+                    this.map.addGeometry(area.perimeter);
+                }
+            });
+        });
     }
 
     displaySearchResult(data) {

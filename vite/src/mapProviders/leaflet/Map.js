@@ -5,6 +5,7 @@ import "leaflet-draw/dist/leaflet.draw.js";
 
 import tileLayer from "./init/addTileLayer";
 import getDrawControl from "./init/getDrawControl";
+import storeArea from "../../apis/storeArea";
 
 export class Map {
     addGeometry(geoJSON) {
@@ -46,32 +47,7 @@ export class Map {
         let geometry = event.layer;
 
         this.markers.addLayer(geometry);
-        this.saveGeometry(geometry.toGeoJSON());
-    }
-
-    // Function to save geometry to API
-    saveGeometry(geometry) {
-        let data = {
-            perimeter: {
-                // TODO: directly use geoJson
-                type: geometry.geometry.type,
-                coordinates: geometry.geometry.coordinates,
-            },
-        };
-
-        // send a POST request to the API with the GeoJSON data
-        fetch("http://127.0.0.1:8000/api/areas", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                // handle the response
-            })
-            .catch((error) => console.error(error));
+        storeArea(geometry.toGeoJSON());
     }
 
     /**
