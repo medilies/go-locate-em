@@ -3,7 +3,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw/dist/leaflet.draw.js";
 
-import drawControl from "./drawControl";
+import tileLayer from "./init/addTileLayer";
+import getDrawControl from "./init/getDrawControl";
 
 export class Map {
     addGeometry(geoJSON) {
@@ -19,22 +20,19 @@ export class Map {
 
     constructor() {
         // Initialize map
-        this.map = L.map("map").setView([36.4312, 2.8331], 4);
+        this.map = L.map("map");
+        this.map.setView([36.4312, 2.8331], 4);
 
         // Add tile layer
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution:
-                'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            maxZoom: 18,
-        }).addTo(this.map);
+        tileLayer(this.map);
 
         // Initialize marker layer group
         this.markers = L.featureGroup().addTo(this.map);
 
+        const drawControl = getDrawControl(this.markers);
+
         // Initialize draw control and add to map
-        this.map.addControl(drawControl(this.markers));
+        this.map.addControl(drawControl);
 
         // Bind event listeners
         this.map.on(

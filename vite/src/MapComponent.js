@@ -1,9 +1,9 @@
-import { Map } from "./Map.js";
+import { Map as LeafletMap } from "./mapProviders/leaflet/Map";
 
 export class MapComponent {
     constructor(id) {
         this.id = id;
-        this.map = new Map(this.id);
+        this.map = new LeafletMap(this.id);
 
         this.onMount();
     }
