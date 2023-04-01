@@ -1,6 +1,7 @@
+/// <reference types="@types/leaflet" />
 import L from "leaflet";
 
-export default (map) => {
+export default (map:L.Map) => {
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
             'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +

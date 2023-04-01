@@ -1,6 +1,7 @@
+/// <reference types="@types/leaflet" />
 import L from "leaflet";
 
-export default (markers) =>
+export default (markers:L.FeatureGroup) =>
     new L.Control.Draw({
         draw: {
             polygon: true,

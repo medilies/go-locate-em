@@ -1,8 +1,15 @@
 import getAreas from "./apis/getAreas";
+
 import { Map as LeafletMap } from "./mapProviders/leaflet/Map";
 
+import Area from "./types/Area";
+import Position from "./types/Position";
+
 export class MapComponent {
-    constructor(id) {
+    id:string
+    map:LeafletMap
+
+    constructor(id:string) {
         this.id = id;
         this.map = new LeafletMap(this.id);
 
@@ -10,9 +17,8 @@ export class MapComponent {
     }
 
     onMount() {
-        // TODO: refactor to refresh map areas
         getAreas().then((data) => {
-            data.forEach((area) => {
+            data.forEach((area:Area) => {
                 if (
                     area.perimeter.type === "Polygon" ||
                     area.perimeter.type === "MultiPolygon"
@@ -23,7 +29,7 @@ export class MapComponent {
         });
     }
 
-    displaySearchResult(data) {
+    displaySearchResult(data:Position[]) {
         this.map.drawMarkers(data);
     }
 }

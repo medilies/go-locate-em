@@ -1,6 +1,6 @@
 import get from "./helpers/get";
 
-export default (query) => {
+export default (query:string) => {
     return get(`/search?query=${query}`)
         .then((response) => response.json())
         .then((data) => data)
