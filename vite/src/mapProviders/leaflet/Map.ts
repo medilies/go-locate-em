@@ -1,8 +1,8 @@
 /// <reference types="@types/leaflet" />
 import L from "leaflet";
+import "leaflet-draw";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import "leaflet-draw/dist/leaflet.draw.js";
 
 import tileLayer from "./init/addTileLayer";
 import getDrawControl from "./init/getDrawControl";
@@ -59,8 +59,7 @@ export class Map {
         this.map.fitBounds(this.markers.getBounds());
     }
 
-    // Handle created event when polygon is drawn
-    private _handleGeometryCreated(event: L.DrawEvents.Created): void {
+    private _handleGeometryCreated(event: L.DrawEvents.Created) {
         let geoJson = event.layer.toGeoJSON();
 
         // TODO: directly use geoJson
