@@ -60,7 +60,13 @@ export class Map {
     _handleGeometryCreated(event) {
         let geoJson = event.layer.toGeoJSON();
 
-        storeArea(geoJson).then((storedArea) => {
+        storeArea({
+            perimeter: {
+                // TODO: directly use geoJson
+                type: geoJson.geometry.type,
+                coordinates: geoJson.geometry.coordinates,
+            },
+        }).then((storedArea) => {
             const area = this.addArea(storedArea.perimeter);
             // console.log(storedArea);
 
