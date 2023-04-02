@@ -38,7 +38,7 @@ export class Map {
         );
     }
 
-    addArea(geoJSON: GeoJSON.GeoJsonObject): L.Layer {
+    addArea(geoJSON: GeoJSON.GeoJsonObject) {
         const conf: L.PathOptions = {
             color: "red",
         };
