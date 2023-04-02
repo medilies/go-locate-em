@@ -82,7 +82,6 @@ In a GeoJSON, there are a few required elements that must be included:
         [
             [-117.13395690917969, 32.74285623633187],
             [-117.1397590637207, 32.74896580084244],
-            [-117.12547302246092, 32.740544068361785],
             [-117.13395690917969, 32.74285623633187]
         ],
         [
@@ -94,6 +93,16 @@ In a GeoJSON, there are a few required elements that must be included:
     ]
 }
 ```
+
+## SRID
+
+SRID stands for Spatial Reference Identifier. It is a unique identifier that specifies the coordinate reference system (CRS) and projection information for a spatial data set.
+
+In GIS (Geographic Information Systems), spatial data is represented as coordinates, which are often referenced to a particular CRS. The CRS defines how the coordinates are mapped to a specific location on the Earth's surface.
+
+Different geographic locations use different CRSs, and SRID provides a standardized way to identify and reference a particular CRS. For example, the SRID 4326 is commonly used to represent data in the WGS84 CRS, which is used by the Global Positioning System (GPS).
+
+By using SRIDs, spatial data can be accurately located and projected onto a map or other geographic representation, even if the data was collected in a different geographic location or using a different coordinate system.
 
 ## SQL
 
@@ -161,3 +170,38 @@ SELECT ST_GeomFromGeoJSON('{"type":"Polygon","coordinates":[[[8.06,37.56],[2.61,
 SELECT ST_AsGeoJSON(ST_GeomFromText('POLYGON((8.06 37.56,2.61 37.56,4.13 36.01,6.85 36.01,8.06 37.56))'));
 -- {"type":"Polygon","coordinates":[[[8.06,37.56],[2.61,37.56],[4.13,36.01],[6.85,36.01],[8.06,37.56]]]}
 ```
+
+### Distance
+
+#### ST_DISTANCE_SPHERE
+
+Calculates the great-circle distance between two points on a sphere or spheroid, using the Haversine formula. This function is typically used for geodetic calculations in applications that require high accuracy, such as navigation or surveying.
+
+```sql
+SELECT
+    ST_DISTANCE_SPHERE(
+        POINT(-0.32170480372414134, 35.85398240387264),
+        POINT(-0.6368148560996869, 35.70035747269707)
+    )
+-- 33164.40908920633
+```
+
+> the `ST_DISTANCE_SPHERE` function is typically slower than the `ST_Distance` function, because it involves more complex calculations.
+
+## References
+
+https://www.distance.to/
+
+https://aaronfrancis.com/2021/efficient-distance-querying-in-my-sql
+
+https://tighten.com/insights/a-mysql-distance-function-you-should-know-about/
+
+https://medium.com/spartner/the-best-way-to-locate-in-mysql-8-e47a59892443
+
+https://youtu.be/M4lR_Va97cQ?list=PLCRMIe5FDPseVvwzRiCQBmNOVUIZSSkP8
+
+https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
+
+https://www.youtube.com/watch?v=OcUKFIjhKu0
+
+https://www.youtube.com/watch?v=iRhSAR3ldTw
