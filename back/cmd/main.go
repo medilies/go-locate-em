@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/medilies/go-locate-em/internal/config"
@@ -21,5 +22,8 @@ func main() {
 
 	fmt.Printf("Linstenning on, see: http://%s \n", appConfig.URL)
 
-	http.ListenAndServe(appConfig.URL, mux)
+	err := http.ListenAndServe(appConfig.URL, mux)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
