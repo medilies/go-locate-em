@@ -1,5 +1,7 @@
 # GIS
 
+![snapshot](./snapshot.png)
+
 ## Longitude & Latitude
 
 ![longitude latitude on earth](https://geography.name/wp-content/uploads/2015/10/Lat_Long.webp)
@@ -31,7 +33,7 @@ These types of geographic objects can be represented in different geospatial dat
 
 ## WKT
 
-Well Know Text (WKT): is a text-based format used to represent geometric objects in a standardized way, used in GIS and spatial databases to store spatial data.
+Well Know Text is a text-based format used to represent geometric objects in a standardized way, used in GIS and spatial databases to store spatial data.
 
 ### Examples
 
@@ -98,9 +100,9 @@ In a GeoJSON, there are a few required elements that must be included:
 
 SRID stands for Spatial Reference Identifier. It is a unique identifier that specifies the coordinate reference system (CRS) and projection information for a spatial data set.
 
-In GIS (Geographic Information Systems), spatial data is represented as coordinates, which are often referenced to a particular CRS. The CRS defines how the coordinates are mapped to a specific location on the Earth's surface.
+In GIS, spatial data is represented as coordinates, which are often referenced to a particular CRS. The CRS defines how the coordinates are mapped to a specific location on the Earth's surface.
 
-Different geographic locations use different CRSs, and SRID provides a standardized way to identify and reference a particular CRS. For example, the SRID 4326 is commonly used to represent data in the WGS84 CRS, which is used by the Global Positioning System (GPS).
+Different geographic locations use different CRSs, and SRID provides a standardized way to identify and reference a particular CRS. For example, the SRID 4326 is commonly used to represent data in the WGS84 CRS, which is used by the GPS.
 
 By using SRIDs, spatial data can be accurately located and projected onto a map or other geographic representation, even if the data was collected in a different geographic location or using a different coordinate system.
 
@@ -190,7 +192,15 @@ SELECT
 
 ## References
 
-https://www.distance.to/
+### System/Software design
+
+https://youtu.be/M4lR_Va97cQ?list=PLCRMIe5FDPseVvwzRiCQBmNOVUIZSSkP8
+
+https://www.youtube.com/watch?v=OcUKFIjhKu0
+
+https://www.youtube.com/watch?v=iRhSAR3ldTw
+
+### Distance
 
 https://aaronfrancis.com/2021/efficient-distance-querying-in-my-sql
 
@@ -198,10 +208,8 @@ https://tighten.com/insights/a-mysql-distance-function-you-should-know-about/
 
 https://medium.com/spartner/the-best-way-to-locate-in-mysql-8-e47a59892443
 
-https://youtu.be/M4lR_Va97cQ?list=PLCRMIe5FDPseVvwzRiCQBmNOVUIZSSkP8
-
 https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 
-https://www.youtube.com/watch?v=OcUKFIjhKu0
+### Online tools
 
-https://www.youtube.com/watch?v=iRhSAR3ldTw
+https://www.distance.to/
