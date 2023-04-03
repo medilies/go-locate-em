@@ -16,22 +16,17 @@ export class Map {
     private markers: L.FeatureGroup;
 
     constructor(id:string) {
-        // Initialize map
         this.map = L.map(id);
-        this.map.setView([29, 2.4], 5);
+        this.map.setView([28, 3], 5);
 
-        // Add tile layer
         tileLayer(this.map);
 
-        // Initialize marker layer group
         this.markers = L.featureGroup().addTo(this.map);
 
         const drawControl = getDrawControl(this.markers);
 
-        // Initialize draw control and add to map
         this.map.addControl(drawControl);
 
-        // Bind event listeners
         this.map.on(
             L.Draw.Event.CREATED,
             this._handleGeometryCreated.bind(this)
@@ -71,7 +66,7 @@ export class Map {
             },
         }).then((storedArea:Area) => {
             console.log(storedArea);
-            
+
             const area = this.addArea(storedArea.perimeter);
             // console.log(storedArea);
 
