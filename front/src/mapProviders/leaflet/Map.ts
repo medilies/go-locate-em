@@ -33,12 +33,12 @@ export class Map {
         );
     }
 
-    addArea(geoJSON: GeoJSON.GeoJsonObject) {
+    addArea(area: Area) {
         const conf: L.PathOptions = {
             color: "red",
         };
 
-        return L.geoJSON(geoJSON, conf).addTo(this.map);
+        return L.geoJSON(area.perimeter, conf).addTo(this.map).bindTooltip(area.name);
     }
 
     drawMarkers(data: { latitude: number; longitude: number; name: string }[]): void {
@@ -57,9 +57,11 @@ export class Map {
     private _handleGeometryCreated(event: L.DrawEvents.Created) {
         let geoJson = event.layer.toGeoJSON();
 
+        const name = prompt("Enter area name:");
+
         // TODO: directly use geoJson
         storeArea({
-            name: "",
+            name,
             perimeter: {
                 type: geoJson.geometry.type,
                 coordinates: geoJson.geometry.coordinates,
@@ -67,7 +69,7 @@ export class Map {
         }).then((storedArea:Area) => {
             console.log(storedArea);
 
-            const area = this.addArea(storedArea.perimeter);
+            const area = this.addArea(storedArea);
             // console.log(storedArea);
 
             // zoom the map to the geometry

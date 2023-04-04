@@ -32,6 +32,7 @@ func (AreaController) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 type RequestBody struct {
+	Name      string          `json:"name"`
 	Perimeter json.RawMessage `json:"perimeter"`
 }
 
@@ -59,7 +60,7 @@ func (AreaController) Store(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: use a real name
-	result, err := stmt.Exec("area_name", req.Perimeter)
+	result, err := stmt.Exec(req.Name, req.Perimeter)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
