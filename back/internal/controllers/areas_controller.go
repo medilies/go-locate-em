@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/medilies/go-locate-em/internal/models"
 	"github.com/medilies/go-locate-em/internal/models/database"
+	"github.com/medilies/go-locate-em/internal/types"
 )
 
 type AreaController struct{}
@@ -31,11 +32,6 @@ func (AreaController) Index(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(states)
 }
 
-type RequestBody struct {
-	Name      string          `json:"name"`
-	Perimeter json.RawMessage `json:"perimeter"`
-}
-
 func (AreaController) Store(w http.ResponseWriter, r *http.Request) {
 	// Read the request body
 	body, err := io.ReadAll(r.Body)
@@ -45,7 +41,7 @@ func (AreaController) Store(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse the JSON string into a Request struct
-	var req RequestBody
+	var req types.Area
 	err = json.Unmarshal(body, &req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

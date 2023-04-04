@@ -2,9 +2,10 @@ package models
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/medilies/go-locate-em/internal/types"
 )
 
 type AreaModel struct {
@@ -17,22 +18,16 @@ func NewAreaModel(db *sql.DB) *AreaModel {
 	return &AreaModel{db, "areas", []string{"id", "name", "ST_AsGeoJSON(perimeter)"}}
 }
 
-type Area struct {
-	Id        int             `json:"id"`
-	Name      string          `json:"name"`
-	Perimeter json.RawMessage `json:"perimeter"`
-}
-
-func (m *AreaModel) All() ([]Area, error) {
+func (m *AreaModel) All() ([]types.Area, error) {
 	rows, err := m.db.Query(fmt.Sprintf("SELECT %s FROM %s", strings.Join(m.columnsList, ", "), m.table))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var areas []Area
+	var areas []types.Area
 	for rows.Next() {
-		var area Area
+		var area types.Area
 		err := rows.Scan(&area.Id, &area.Name, &area.Perimeter)
 		if err != nil {
 			return nil, err
